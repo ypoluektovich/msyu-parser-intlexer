@@ -40,6 +40,16 @@ public final class RangeSet {
 		return ends[index];
 	}
 
+	public final int find(int n) {
+		int ix = Arrays.binarySearch(starts, n);
+		if (ix >= 0) {
+			return ix;
+		}
+		int insertionPoint = ix;
+		ix = -(ix + 1) - 1;
+		return ix >= 0 && n < ends[ix] ? ix : insertionPoint;
+	}
+
 
 	public RangeSet(int[] ranges) {
 		if (ranges.length % 2 != 0) {
