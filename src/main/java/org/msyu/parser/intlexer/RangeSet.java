@@ -50,6 +50,10 @@ public final class RangeSet {
 		return ix >= 0 && n < ends[ix] ? ix : insertionPoint;
 	}
 
+	public final boolean contains(int n) {
+		return find(n) >= 0;
+	}
+
 
 	public RangeSet(int[] ranges) {
 		if (ranges.length % 2 != 0) {
