@@ -23,4 +23,16 @@ public final class Xml {
 			0x10000, 0xF0000
 	});
 
+	public static final RangeSet NAME_CHAR = RangeSet.basis(
+			NAME_START_CHAR,
+			new RangeSet(new int[]{
+					'-', '-' + 1,
+					'.', '.' + 1,
+					'0', '9' + 1,
+					0xB7, 0xB8,
+					0x300, 0x370,
+					0x203F, 0x2041
+			})
+	);
+
 }
