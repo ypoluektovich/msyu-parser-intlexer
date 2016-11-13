@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'org.msyu.parser'
+version '0.1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'http://dl.bintray.com/ypoluektovich/msyu' }
+    mavenLocal()
+}
+
+dependencies {
+    compile 'org.msyu.javautil:cf:0.1.+'
+    compile 'org.msyu.parser:sixteen2four:1.+'
+
+    testCompile 'org.testng:testng:6.9.+'
+}
+
+test {
+    useTestNG()
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        main(MavenPublication) {
+            from components.java
+            artifactId 'intlexer'
+
+            artifact sourceJar {
+                classifier 'sources'
+            }
+        }
+    }
+}
