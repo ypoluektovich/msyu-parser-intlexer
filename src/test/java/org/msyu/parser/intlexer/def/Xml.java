@@ -2,8 +2,9 @@ package org.msyu.parser.intlexer.def;
 
 import org.msyu.parser.intlexer.RangeSet;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import static org.msyu.parser.intlexer.def.Defs.cseq;
+import static org.msyu.parser.intlexer.def.Defs.rpt;
+import static org.msyu.parser.intlexer.def.Defs.sseq;
 
 public final class Xml {
 
@@ -38,9 +39,6 @@ public final class Xml {
 			})
 	);
 
-	public static final ADef NAME = new ComplexSeq(asList(
-			new SimpleSeq(singletonList(NAME_START_CHAR)),
-			new Rpt(new SimpleSeq(singletonList(NAME_CHAR)))
-	));
+	public static final ADef NAME = cseq(sseq(NAME_START_CHAR), rpt(sseq(NAME_CHAR)));
 
 }

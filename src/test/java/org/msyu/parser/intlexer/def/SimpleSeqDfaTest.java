@@ -3,12 +3,12 @@ package org.msyu.parser.intlexer.def;
 import org.msyu.parser.intlexer.dfa.DFA;
 import org.testng.annotations.Test;
 
-import static java.util.Arrays.asList;
+import static org.msyu.parser.intlexer.def.Defs.sseq;
 import static org.msyu.parser.intlexer.dfa.DfaBuilder.dfaFor;
 
 public class SimpleSeqDfaTest {
 
-	private static final DFA dfa = dfaFor(new SimpleSeq(asList(Xml.NAME_START_CHAR, Xml.NAME_CHAR)));
+	private static final DFA dfa = dfaFor(sseq(Xml.NAME_START_CHAR, Xml.NAME_CHAR));
 
 	private static final int START = 0;
 	private static final int MIDDLE = 1;

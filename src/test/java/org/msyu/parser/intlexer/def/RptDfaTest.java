@@ -3,13 +3,14 @@ package org.msyu.parser.intlexer.def;
 import org.msyu.parser.intlexer.dfa.DFA;
 import org.testng.annotations.Test;
 
-import static java.util.Arrays.asList;
 import static javax.sound.midi.ShortMessage.START;
+import static org.msyu.parser.intlexer.def.Defs.rpt;
+import static org.msyu.parser.intlexer.def.Defs.sseq;
 import static org.msyu.parser.intlexer.dfa.DfaBuilder.dfaFor;
 
 public class RptDfaTest {
 
-	private static final DFA dfa = dfaFor(new Rpt(new SimpleSeq(asList(Xml.NAME_CHAR, Xml.NAME_CHAR))));
+	private static final DFA dfa = dfaFor(rpt(sseq(Xml.NAME_CHAR, Xml.NAME_CHAR)));
 
 	@Test()
 	public void beginning() {
