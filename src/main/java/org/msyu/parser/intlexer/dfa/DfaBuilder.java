@@ -2,6 +2,7 @@ package org.msyu.parser.intlexer.dfa;
 
 import org.msyu.parser.intlexer.RangeSet;
 import org.msyu.parser.intlexer.def.ADef;
+import org.msyu.parser.intlexer.def.ComplexSeq;
 import org.msyu.parser.intlexer.def.Rpt;
 import org.msyu.parser.intlexer.def.SimpleSeq;
 
@@ -9,11 +10,16 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 public final class DfaBuilder {
 
+	/**
+	 * Build a Deterministic Finite Automaton that accepts the language defined by the specified {@code def}.
+	 */
 	public static DFA dfaFor(ADef def) {
 		return process(def, new HashMap<>()).build();
 	}
@@ -22,10 +28,17 @@ public final class DfaBuilder {
 		DfaBuilder builder = cache.get(def);
 		if (builder == null) {
 			builder = new DfaBuilder();
+			// todo: think about Strategy pattern
 			if (def instanceof SimpleSeq) {
 				builder.processSimple((SimpleSeq) def);
 			} else if (def instanceof Rpt) {
 				builder.processRpt(process(((Rpt) def).repeated, cache));
+			} else if (def instanceof ComplexSeq) {
+				builder.processComplex(
+						((ComplexSeq) def).elements.stream()
+								.map(innerDef -> process(innerDef, cache))
+								.collect(Collectors.toList())
+				);
 			} else {
 				throw new UnsupportedOperationException("defs other than SimpleSeq are not supported yet");
 			}
@@ -115,16 +128,99 @@ public final class DfaBuilder {
 						}
 					}
 				}
-				Integer nextIndex = indexByState.get(nextState);
-				if (nextIndex == null) {
-					nextIndex = stateCount++;
-					indexByState.put(nextState, nextIndex);
-					terminals.set(nextIndex, terminal);
-					queue.add(nextState);
+				if (!nextState.isEmpty()) {
+					Integer nextIndex = indexByState.get(nextState);
+					if (nextIndex == null) {
+						nextIndex = stateCount++;
+						indexByState.put(nextState, nextIndex);
+						terminals.set(nextIndex, terminal);
+						queue.add(nextState);
+					}
+					setTransition(stateIndex, rangeIx, nextIndex);
 				}
-				setTransition(stateIndex, rangeIx, nextIndex);
 			}
 		}
+	}
+
+
+	private void processComplex(List<DfaBuilder> elements) {
+		int[] stateCountSums = new int[elements.size()];
+		int jointStateCount = 0;
+		{
+			for (int i = 0; i < elements.size(); ++i) {
+				DfaBuilder element = elements.get(i);
+				basis = basis == null ? element.basis : RangeSet.basis(basis, element.basis);
+				jointStateCount += element.stateCount;
+				stateCountSums[i] = jointStateCount;
+			}
+		}
+
+		Map<BitSet, Integer> indexByState = new HashMap<>();
+		Queue<BitSet> queue = new ArrayDeque<>();
+
+		BitSet state = BitSet.valueOf(new byte[]{1});
+		{
+			boolean terminal = false;
+			int elementIx = 0;
+			DfaBuilder element = elements.get(elementIx);
+			int nextElementState = 0;
+			while (element.terminals.get(nextElementState) && elementIx < elements.size() - 1) {
+				element = elements.get(++elementIx);
+				state.set(stateCountSums[elementIx - 1]);
+				nextElementState = 0;
+			}
+			if (elementIx == elements.size() - 1 && element.terminals.get(nextElementState)) {
+				terminal = true;
+			}
+			terminals.set(0, terminal);
+		}
+		indexByState.put(state, stateCount);
+		++stateCount;
+		queue.add(state);
+
+		while ((state = queue.poll()) != null) {
+			int stateIndex = indexByState.get(state);
+			for (int rangeIx = 0; rangeIx < basis.size(); ++rangeIx) {
+				BitSet nextState = new BitSet(jointStateCount);
+				boolean terminal = false;
+				for (int substate = state.nextSetBit(0); substate >= 0; substate = state.nextSetBit(substate + 1)) {
+					int elementIx = Arrays.binarySearch(stateCountSums, substate);
+					int elementState;
+					if (elementIx >= 0) {
+						++elementIx;
+						elementState = 0;
+					} else {
+						elementIx = -(elementIx + 1);
+						elementState = elementIx == 0 ? substate : (substate - stateCountSums[elementIx - 1]);
+					}
+					DfaBuilder element = elements.get(elementIx);
+					int elementRangeIx = element.basis.find(basis.getStart(rangeIx));
+					int nextElementState = elementRangeIx >= 0 ? element.getTransition(elementState, elementRangeIx) : NO_TRANSITION;
+					if (nextElementState != NO_TRANSITION) {
+						nextState.set((elementIx == 0 ? 0 : stateCountSums[elementIx - 1]) + nextElementState);
+						while (element.terminals.get(nextElementState) && elementIx < elements.size() - 1) {
+							element = elements.get(++elementIx);
+							nextState.set(stateCountSums[elementIx - 1]);
+							nextElementState = 0;
+						}
+						if (elementIx == elements.size() - 1 && element.terminals.get(nextElementState)) {
+							terminal = true;
+						}
+					}
+				}
+				if (!nextState.isEmpty()) {
+					Integer nextIndex = indexByState.get(nextState);
+					if (nextIndex == null) {
+						nextIndex = stateCount++;
+						indexByState.put(nextState, nextIndex);
+						terminals.set(nextIndex, terminal);
+						queue.add(nextState);
+					}
+					setTransition(stateIndex, rangeIx, nextIndex);
+				}
+			}
+		}
+
 	}
 
 
