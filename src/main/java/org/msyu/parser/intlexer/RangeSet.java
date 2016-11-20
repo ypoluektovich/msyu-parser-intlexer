@@ -4,6 +4,9 @@ import java.util.Arrays;
 
 import static java.util.Arrays.copyOf;
 
+/**
+ * Set of disjoint intervals within [0; {@link Integer#MAX_VALUE}).
+ */
 public final class RangeSet {
 
 	private final int[] starts;
@@ -28,18 +31,33 @@ public final class RangeSet {
 	}
 
 
+	/**
+	 * @return the number of ranges in this set.
+	 */
 	public final int size() {
 		return starts.length;
 	}
 
+	/**
+	 * @return the first number in the range with the specified index.
+	 */
 	public final int getStart(int index) {
 		return starts[index];
 	}
 
+	/**
+	 * @return the last number in the range with the specified index, plus 1.
+	 */
 	public final int getEnd(int index) {
 		return ends[index];
 	}
 
+	/**
+	 * @return a non-negative index of a range in this set that contains the specified number {@code n},
+	 * or, if {@code n} is not in any range, {@code (-(insertion point) - 1)},
+	 * where {@code insertion point} is the index of a range consisting of only {@code n},
+	 * were it inserted in this set.
+	 */
 	public final int find(int n) {
 		int ix = Arrays.binarySearch(starts, n);
 		if (ix >= 0) {
@@ -50,11 +68,21 @@ public final class RangeSet {
 		return ix >= 0 && n < ends[ix] ? ix : insertionPoint;
 	}
 
+	/**
+	 * @return {@code true} if a range in this set contains the specified number, {@code false} otherwise.
+	 */
 	public final boolean contains(int n) {
 		return find(n) >= 0;
 	}
 
 
+	/**
+	 * @param ranges an array containing pairs of (range start; range end + 1).
+	 * For example, to construct a range set that contains numbers 0 and 1, use {@code new RangeSet(new int[]{0, 2})}.
+	 * Ranges must already be sorted.
+	 *
+	 * @throws IllegalArgumentException
+	 */
 	public RangeSet(int[] ranges) {
 		if (ranges.length % 2 != 0) {
 			throw new IllegalArgumentException("ranges array length is not even");
@@ -84,6 +112,10 @@ public final class RangeSet {
 		this.ends = ends;
 	}
 
+	/**
+	 * Builds a range set that is the basis of the two specified sets.
+	 * <p>Example: basis of sets {[0, 4)} and {[2, 6)} is {[0, 2), [2, 4), [4, 6)}.</p>
+	 */
 	public static RangeSet basis(RangeSet a, RangeSet b) {
 		// todo: overflow checks
 		int nA = a.starts.length;
