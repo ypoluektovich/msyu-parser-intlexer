@@ -1,4 +1,4 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
 public abstract class ADef {
 	ADef() {

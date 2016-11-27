@@ -1,6 +1,4 @@
-package org.msyu.parser.intlexer.def;
-
-import org.msyu.parser.intlexer.RangeSet;
+package org.msyu.parser.intlexer;
 
 import static java.util.Arrays.asList;
 

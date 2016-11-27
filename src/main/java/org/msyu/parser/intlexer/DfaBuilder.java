@@ -1,11 +1,4 @@
-package org.msyu.parser.intlexer.dfa;
-
-import org.msyu.parser.intlexer.RangeSet;
-import org.msyu.parser.intlexer.def.ADef;
-import org.msyu.parser.intlexer.def.Alt;
-import org.msyu.parser.intlexer.def.ComplexSeq;
-import org.msyu.parser.intlexer.def.Rpt;
-import org.msyu.parser.intlexer.def.SimpleSeq;
+package org.msyu.parser.intlexer;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;

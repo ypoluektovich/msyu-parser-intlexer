@@ -1,4 +1,4 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
 import org.msyu.javautil.cf.CopyList;
 
@@ -6,9 +6,9 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public class Alt extends ADef {
+public final class Alt extends ADef {
 
-	public final List<ADef> alternatives;
+	final List<ADef> alternatives;
 
 	public Alt(List<? extends ADef> alternatives) {
 		if (alternatives.isEmpty()) {

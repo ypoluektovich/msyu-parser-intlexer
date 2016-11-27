@@ -1,17 +1,16 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
 import org.msyu.javautil.cf.CopyList;
-import org.msyu.parser.intlexer.RangeSet;
 
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-public final class SimpleSeq extends ADef {
+public final class ComplexSeq extends ADef {
 
-	public final List<RangeSet> elements;
+	final List<ADef> elements;
 
-	public SimpleSeq(List<RangeSet> elements) {
+	public ComplexSeq(List<? extends ADef> elements) {
 		if (elements.isEmpty()) {
 			throw new IllegalArgumentException("element list must not be empty");
 		}

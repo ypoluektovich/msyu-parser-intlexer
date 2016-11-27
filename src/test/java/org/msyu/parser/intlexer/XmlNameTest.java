@@ -1,9 +1,8 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
-import org.msyu.parser.intlexer.dfa.DFA;
 import org.testng.annotations.Test;
 
-import static org.msyu.parser.intlexer.dfa.DfaBuilder.dfaFor;
+import static org.msyu.parser.intlexer.DfaBuilder.dfaFor;
 
 public class XmlNameTest {
 

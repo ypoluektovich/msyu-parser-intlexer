@@ -1,6 +1,4 @@
-package org.msyu.parser.intlexer.dfa;
-
-import org.msyu.parser.intlexer.RangeSet;
+package org.msyu.parser.intlexer;
 
 import java.util.BitSet;
 

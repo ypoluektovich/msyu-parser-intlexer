@@ -1,12 +1,10 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
-import org.msyu.parser.intlexer.RangeSet;
-import org.msyu.parser.intlexer.dfa.DFA;
 import org.testng.annotations.Test;
 
-import static org.msyu.parser.intlexer.def.Defs.cseq;
-import static org.msyu.parser.intlexer.def.Defs.sseq;
-import static org.msyu.parser.intlexer.dfa.DfaBuilder.dfaFor;
+import static org.msyu.parser.intlexer.Defs.cseq;
+import static org.msyu.parser.intlexer.Defs.sseq;
+import static org.msyu.parser.intlexer.DfaBuilder.dfaFor;
 
 public class ComplexSeqOfSimpleTest {
 
