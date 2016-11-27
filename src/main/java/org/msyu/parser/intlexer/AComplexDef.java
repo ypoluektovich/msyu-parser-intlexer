@@ -30,10 +30,7 @@ public abstract class AComplexDef extends ADef {
 		Queue<BitSet> queue = new ArrayDeque<>();
 
 		BitSet state = new BitSet();
-		b.terminals.set(0, buildInitialState(elements, stateCountSums, state));
-		indexByState.put(state, b.stateCount);
-		++b.stateCount;
-		queue.add(state);
+		registerNewState(state, buildInitialState(elements, stateCountSums, state), b, indexByState, queue);
 
 		while ((state = queue.poll()) != null) {
 			int stateIndex = indexByState.get(state);
@@ -61,15 +58,26 @@ public abstract class AComplexDef extends ADef {
 				if (!nextState.isEmpty()) {
 					Integer nextIndex = indexByState.get(nextState);
 					if (nextIndex == null) {
-						nextIndex = b.stateCount++;
-						indexByState.put(nextState, nextIndex);
-						b.terminals.set(nextIndex, terminal);
-						queue.add(nextState);
+						nextIndex = registerNewState(nextState, terminal, b, indexByState, queue);
 					}
 					b.setTransition(stateIndex, rangeIx, nextIndex);
 				}
 			}
 		}
+	}
+
+	private int registerNewState(
+			BitSet state,
+			boolean terminal,
+			DfaBuilder b,
+			Map<BitSet, Integer> indexByState,
+			Queue<BitSet> queue
+	) {
+		int stateIx = b.stateCount++;
+		indexByState.put(state, stateIx);
+		b.terminals.set(stateIx, terminal);
+		queue.add(state);
+		return stateIx;
 	}
 
 	protected abstract boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state);
