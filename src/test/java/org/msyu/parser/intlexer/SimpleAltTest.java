@@ -1,18 +1,15 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
-import org.msyu.parser.intlexer.RangeSet;
-import org.msyu.parser.intlexer.dfa.DFA;
 import org.testng.annotations.Test;
 
-import static org.msyu.parser.intlexer.def.Defs.alt;
-import static org.msyu.parser.intlexer.def.Defs.sseq;
-import static org.msyu.parser.intlexer.dfa.DfaBuilder.dfaFor;
+import static org.msyu.parser.intlexer.Defs.alt;
+import static org.msyu.parser.intlexer.Defs.sseq;
 
 public class SimpleAltTest {
 
 	private static final RangeSet RANGE_0 = new RangeSet(new int[]{0, 1});
 	private static final RangeSet RANGE_1 = new RangeSet(new int[]{1, 2});
-	private static final DFA dfa = dfaFor(alt(sseq(RANGE_0), sseq(RANGE_1, RANGE_1)));
+	private static final DFA dfa = alt(sseq(RANGE_0), sseq(RANGE_1, RANGE_1)).buildDFA();
 
 	private static final int START = 0;
 

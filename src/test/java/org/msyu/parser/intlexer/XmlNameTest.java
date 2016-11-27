@@ -1,13 +1,10 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
-import org.msyu.parser.intlexer.dfa.DFA;
 import org.testng.annotations.Test;
-
-import static org.msyu.parser.intlexer.dfa.DfaBuilder.dfaFor;
 
 public class XmlNameTest {
 
-	private static final DFA dfa = dfaFor(Xml.NAME);
+	private static final DFA dfa = Xml.NAME.buildDFA();
 
 	@Test
 	public void test() {

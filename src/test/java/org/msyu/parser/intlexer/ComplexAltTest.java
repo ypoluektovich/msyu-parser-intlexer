@@ -1,24 +1,21 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
-import org.msyu.parser.intlexer.RangeSet;
-import org.msyu.parser.intlexer.dfa.DFA;
 import org.testng.annotations.Test;
 
-import static org.msyu.parser.intlexer.def.Defs.alt;
-import static org.msyu.parser.intlexer.def.Defs.cseq;
-import static org.msyu.parser.intlexer.def.Defs.rpt;
-import static org.msyu.parser.intlexer.def.Defs.sseq;
-import static org.msyu.parser.intlexer.dfa.DfaBuilder.dfaFor;
+import static org.msyu.parser.intlexer.Defs.alt;
+import static org.msyu.parser.intlexer.Defs.cseq;
+import static org.msyu.parser.intlexer.Defs.rpt;
+import static org.msyu.parser.intlexer.Defs.sseq;
 
 public class ComplexAltTest {
 
 	private static final RangeSet RANGE_0 = new RangeSet(new int[]{0, 1});
 	private static final RangeSet RANGE_1 = new RangeSet(new int[]{1, 2});
 	private static final RangeSet RANGE_2 = new RangeSet(new int[]{2, 3});
-	private static final DFA dfa = dfaFor(alt(
+	private static final DFA dfa = alt(
 			cseq(sseq(RANGE_0), rpt(sseq(RANGE_1))),
 			cseq(rpt(sseq(RANGE_1)), rpt(sseq(RANGE_2)))
-	));
+	).buildDFA();
 
 	private static final int START = 0;
 

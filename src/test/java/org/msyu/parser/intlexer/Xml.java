@@ -1,10 +1,8 @@
-package org.msyu.parser.intlexer.def;
+package org.msyu.parser.intlexer;
 
-import org.msyu.parser.intlexer.RangeSet;
-
-import static org.msyu.parser.intlexer.def.Defs.cseq;
-import static org.msyu.parser.intlexer.def.Defs.rpt;
-import static org.msyu.parser.intlexer.def.Defs.sseq;
+import static org.msyu.parser.intlexer.Defs.cseq;
+import static org.msyu.parser.intlexer.Defs.rpt;
+import static org.msyu.parser.intlexer.Defs.sseq;
 
 public final class Xml {
 
