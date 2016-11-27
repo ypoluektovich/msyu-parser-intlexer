@@ -18,4 +18,8 @@ public class Defs {
 		return new Rpt(repeated);
 	}
 
+	public static Alt alt(ADef... elements) {
+		return new Alt(asList(elements));
+	}
+
 }
