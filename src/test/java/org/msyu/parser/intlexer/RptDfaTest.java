@@ -5,11 +5,10 @@ import org.testng.annotations.Test;
 import static javax.sound.midi.ShortMessage.START;
 import static org.msyu.parser.intlexer.Defs.rpt;
 import static org.msyu.parser.intlexer.Defs.sseq;
-import static org.msyu.parser.intlexer.DfaBuilder.dfaFor;
 
 public class RptDfaTest {
 
-	private static final DFA dfa = dfaFor(rpt(sseq(Xml.NAME_CHAR, Xml.NAME_CHAR)));
+	private static final DFA dfa = rpt(sseq(Xml.NAME_CHAR, Xml.NAME_CHAR)).buildDFA();
 
 	@Test()
 	public void beginning() {

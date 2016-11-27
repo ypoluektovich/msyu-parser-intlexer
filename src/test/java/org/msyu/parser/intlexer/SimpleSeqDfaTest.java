@@ -3,11 +3,10 @@ package org.msyu.parser.intlexer;
 import org.testng.annotations.Test;
 
 import static org.msyu.parser.intlexer.Defs.sseq;
-import static org.msyu.parser.intlexer.DfaBuilder.dfaFor;
 
 public class SimpleSeqDfaTest {
 
-	private static final DFA dfa = dfaFor(sseq(Xml.NAME_START_CHAR, Xml.NAME_CHAR));
+	private static final DFA dfa = sseq(Xml.NAME_START_CHAR, Xml.NAME_CHAR).buildDFA();
 
 	private static final int START = 0;
 	private static final int MIDDLE = 1;
