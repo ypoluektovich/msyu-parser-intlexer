@@ -17,4 +17,21 @@ public final class SimpleSeq extends ADef {
 		this.elements = CopyList.immutable(elements, rs -> requireNonNull(rs, "all elements must be nonnull"));
 	}
 
+	@Override
+	public final boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || obj.getClass() != SimpleSeq.class) {
+			return false;
+		}
+		return elements.equals(((SimpleSeq) obj).elements);
+
+	}
+
+	@Override
+	public final int hashCode() {
+		return elements.hashCode();
+	}
+
 }

@@ -17,4 +17,21 @@ public final class Alt extends ADef {
 		this.alternatives = CopyList.immutable(alternatives, rs -> requireNonNull(rs, "all alternatives must be nonnull"));
 	}
 
+	@Override
+	public final boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || obj.getClass() != Alt.class) {
+			return false;
+		}
+		return alternatives.equals(((Alt) obj).alternatives);
+
+	}
+
+	@Override
+	public final int hashCode() {
+		return alternatives.hashCode();
+	}
+
 }
