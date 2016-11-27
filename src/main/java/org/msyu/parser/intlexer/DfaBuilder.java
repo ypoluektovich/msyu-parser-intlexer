@@ -141,7 +141,7 @@ final class DfaBuilder {
 	}
 
 	final int getTransition(int from, int by) {
-		if (from > transitionTable.length) {
+		if (from >= transitionTable.length) {
 			return NO_TRANSITION;
 		}
 		int[] transitionRow = transitionTable[from];
