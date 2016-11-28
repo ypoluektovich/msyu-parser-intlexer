@@ -4,7 +4,7 @@ import org.testng.annotations.Test;
 
 public class RangeSetFindTest {
 
-	private static final RangeSet RS = new RangeSet(new int[]{1, 5, 11, 15});
+	private static final RangeSet RS = new RangeSet(new int[]{1, 4, 11, 14});
 
 	@Test
 	public void before() {

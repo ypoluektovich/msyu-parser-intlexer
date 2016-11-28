@@ -9,9 +9,9 @@ import static org.msyu.parser.intlexer.Defs.sseq;
 
 public class ComplexAltTest {
 
-	private static final RangeSet RANGE_0 = new RangeSet(new int[]{0, 1});
-	private static final RangeSet RANGE_1 = new RangeSet(new int[]{1, 2});
-	private static final RangeSet RANGE_2 = new RangeSet(new int[]{2, 3});
+	private static final RangeSet RANGE_0 = new RangeSet(new int[]{0, 0});
+	private static final RangeSet RANGE_1 = new RangeSet(new int[]{1, 1});
+	private static final RangeSet RANGE_2 = new RangeSet(new int[]{2, 2});
 	private static final DFA dfa = alt(
 			cseq(sseq(RANGE_0), rpt(sseq(RANGE_1))),
 			cseq(rpt(sseq(RANGE_1)), rpt(sseq(RANGE_2)))

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import static java.util.Arrays.copyOf;
 
 /**
- * Set of disjoint intervals within [0; {@link Integer#MAX_VALUE}).
+ * Set of disjoint intervals within [0; {@link Integer#MAX_VALUE}].
  */
 public final class RangeSet {
 
@@ -30,6 +30,20 @@ public final class RangeSet {
 		return Arrays.hashCode(starts) * 31 + Arrays.hashCode(ends);
 	}
 
+	@Override
+	public final String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append('{');
+		for (int i = 0; i < starts.length; ++i) {
+			sb.append('[');
+			sb.append(starts[i]);
+			sb.append(',');
+			sb.append(ends[i]);
+			sb.append(']');
+		}
+		sb.append('}');
+		return sb.toString();
+	}
 
 	/**
 	 * @return the number of ranges in this set.
@@ -65,7 +79,7 @@ public final class RangeSet {
 		}
 		int insertionPoint = ix;
 		ix = -(ix + 1) - 1;
-		return ix >= 0 && n < ends[ix] ? ix : insertionPoint;
+		return ix >= 0 && n <= ends[ix] ? ix : insertionPoint;
 	}
 
 	/**
@@ -77,8 +91,8 @@ public final class RangeSet {
 
 
 	/**
-	 * @param ranges an array containing pairs of (range start; range end + 1).
-	 * For example, to construct a range set that contains numbers 0 and 1, use {@code new RangeSet(new int[]{0, 2})}.
+	 * @param ranges an array containing pairs of (range start; range end), both values inclusive.
+	 * For example, to construct a range set that contains numbers 0 and 1, use {@code new RangeSet(new int[]{0, 1})}.
 	 * Ranges must already be sorted.
 	 *
 	 * @throws IllegalArgumentException
@@ -90,15 +104,15 @@ public final class RangeSet {
 		int n = ranges.length / 2;
 		starts = new int[n];
 		ends = new int[n];
-		int prevEnd = 0;
+		int prevEnd = -1;
 		for (int i = 0; i < n; ++i) {
 			int start = ranges[i * 2];
 			int end = ranges[i * 2 + 1];
-			if (start < prevEnd) {
-				throw new IllegalArgumentException("range start is too low at position " + i * 2);
+			if (start <= prevEnd) {
+				throw new IllegalArgumentException("range overlaps previous at position " + i * 2);
 			}
-			if (end <= start) {
-				throw new IllegalArgumentException("empty/inverted range at position " + i * 2);
+			if (end < start) {
+				throw new IllegalArgumentException("inverted range at position " + i * 2);
 			}
 			starts[i] = start;
 			ends[i] = end;
@@ -114,7 +128,7 @@ public final class RangeSet {
 
 	/**
 	 * Builds a range set that is the basis of the two specified sets.
-	 * <p>Example: basis of sets {[0, 4)} and {[2, 6)} is {[0, 2), [2, 4), [4, 6)}.</p>
+	 * <p>Example: basis of sets {[0, 3]} and {[2, 5]} is {[0, 1], [2, 3], [4, 5]}.</p>
 	 */
 	public static RangeSet basis(RangeSet a, RangeSet b) {
 		// todo: overflow checks
@@ -142,33 +156,34 @@ public final class RangeSet {
 			int end;
 			if (start < sA) {
 				int eB = b.ends[ixB];
-				if (eB <= sA) {
+				if (eB < sA) {
 					end = eB;
 					++ixB;
 				} else {
-					end = sA;
+					end = sA - 1;
 				}
 			} else if (start < sB) {
 				int eA = a.ends[ixA];
-				if (eA <= sB) {
+				if (eA < sB) {
 					end = eA;
 					++ixA;
 				} else {
-					end = sB;
+					end = sB - 1;
 				}
 			} else {
 				int eA = a.ends[ixA];
 				int eB = b.ends[ixB];
 				end = Math.min(eA, eB);
-				if (eA <= end) {
+				if (eA == end) {
 					++ixA;
 				}
-				if (eB <= end) {
+				if (eB == end) {
 					++ixB;
 				}
 			}
 			starts[n] = start;
-			start = ends[n] = end;
+			ends[n] = end;
+			start = end + 1;
 			++n;
 		}
 		if (ixA < nA) {
