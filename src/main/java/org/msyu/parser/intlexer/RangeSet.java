@@ -1,5 +1,8 @@
 package org.msyu.parser.intlexer;
 
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static java.util.Arrays.copyOf;
@@ -7,10 +10,10 @@ import static java.util.Arrays.copyOf;
 /**
  * Set of disjoint intervals within [0; {@link Integer#MAX_VALUE}].
  */
-public final class RangeSet {
+public final class RangeSet implements Serializable {
 
-	private final int[] starts;
-	private final int[] ends;
+	private final transient int[] starts;
+	private final transient int[] ends;
 
 
 	@Override
@@ -106,24 +109,41 @@ public final class RangeSet {
 		ends = new int[n];
 		int prevEnd = -1;
 		for (int i = 0; i < n; ++i) {
-			int start = ranges[i * 2];
-			int end = ranges[i * 2 + 1];
-			if (start <= prevEnd) {
-				throw new IllegalArgumentException("range overlaps previous at position " + i * 2);
-			}
-			if (end < start) {
-				throw new IllegalArgumentException("inverted range at position " + i * 2);
-			}
-			starts[i] = start;
-			ends[i] = end;
-			prevEnd = end;
+			prevEnd = checkAndAssign(i, ranges[i * 2], ranges[i * 2 + 1], prevEnd);
 		}
 	}
 
-	private RangeSet(int[] starts, int[] ends) {
-		assert starts.length == ends.length;
-		this.starts = starts;
-		this.ends = ends;
+	public RangeSet(int[] starts, int[] ends) {
+		if (starts.length != ends.length) {
+			throw new IllegalArgumentException("starts and ends arrays are of different length");
+		}
+		int n = starts.length;
+		this.starts = new int[n];
+		this.ends = new int[n];
+		int prevEnd = -1;
+		for (int i = 0; i < n; ++i) {
+			prevEnd = checkAndAssign(i, starts[i], ends[i], prevEnd);
+		}
+	}
+
+	private int checkAndAssign(int ix, int start, int end, int prevEnd) {
+		if (start <= prevEnd) {
+			throw new IllegalArgumentException("range " + ix + " overlaps the previous one");
+		}
+		if (end < start) {
+			throw new IllegalArgumentException("range " + ix + " is inverted");
+		}
+		starts[ix] = start;
+		ends[ix] = end;
+		return end;
+	}
+
+	/**
+	 * For use only in {@link #basis(RangeSet, RangeSet) basis()}. <strong>Do not use in SerialForm classes!</strong>
+	 */
+	private RangeSet(int[] starts, int[] ends, int length) {
+		this.starts = starts.length == length ? starts : copyOf(starts, length);
+		this.ends = ends.length == length ? ends : copyOf(ends, length);
 	}
 
 	/**
@@ -214,9 +234,32 @@ public final class RangeSet {
 				++ixB;
 			}
 		}
-		return n == cap ?
-				new RangeSet(starts, ends) :
-				new RangeSet(copyOf(starts, n), copyOf(ends, n));
+		return new RangeSet(starts, ends, n);
+	}
+
+
+	private static final long serialVersionUID = 1L;
+
+	private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+		throw new InvalidObjectException("serialization proxy required");
+	}
+
+	private Object writeReplace() {
+		return new SerialForm1(this);
+	}
+
+	private static final class SerialForm1 implements Serializable {
+		private final int[] starts;
+		private final int[] ends;
+
+		SerialForm1(RangeSet rs) {
+			starts = rs.starts;
+			ends = rs.ends;
+		}
+
+		private Object readResolve() {
+			return new RangeSet(starts, ends);
+		}
 	}
 
 }
