@@ -241,7 +241,7 @@ public final class RangeSet implements Serializable {
 	public static RangeSet basis(RangeSet first, RangeSet... other) {
 		RangeSet basis = requireNonNull(first, "all range sets must be nonnull");
 		for (RangeSet rangeSet : other) {
-			basis = basis(first, requireNonNull(rangeSet, "all range sets must be nonnull"));
+			basis = basis(basis, requireNonNull(rangeSet, "all range sets must be nonnull"));
 		}
 		return basis;
 	}

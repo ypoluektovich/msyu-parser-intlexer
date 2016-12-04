@@ -107,4 +107,16 @@ public class RangeSetBasisTest {
 		);
 	}
 
+	@Test
+	public void multibasis() {
+		assertEquals(
+				RangeSet.basis(
+						new RangeSet(new int[]{0, 0}),
+						new RangeSet(new int[]{1, 1}),
+						new RangeSet(new int[]{2, 2})
+				),
+				new RangeSet(new int[]{0, 0, 1, 1, 2, 2})
+		);
+	}
+
 }
