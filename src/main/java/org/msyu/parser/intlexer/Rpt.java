@@ -4,6 +4,7 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
@@ -18,11 +19,11 @@ public final class Rpt extends AComplexDef {
 
 	@Override
 	protected final void process(DfaBuilder b, Map<ADef, DfaBuilder> cache) {
-		process(b, Collections.singletonList(repeated.process(cache)));
+		process(b, Collections.singletonList(repeated.process(cache, false)));
 	}
 
 	@Override
-	protected final boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state) {
+	protected final boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state, Set<Integer> terminatedElements) {
 		state.set(0);
 		return true;
 	}

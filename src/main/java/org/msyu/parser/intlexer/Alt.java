@@ -5,6 +5,7 @@ import org.msyu.javautil.cf.CopyList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -26,19 +27,25 @@ public final class Alt extends AComplexDef {
 		process(
 				b,
 				alternatives.stream()
-						.map(innerDef -> innerDef.process(cache))
+						.map(innerDef -> innerDef.process(cache, false))
 						.collect(Collectors.toList())
 		);
 	}
 
 	@Override
-	protected final boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state) {
+	protected final boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state, Set<Integer> terminatedElements) {
 		boolean terminal = false;
 		int jointStateIx = 0;
 		for (int elementIx = 0; elementIx < stateCountSums.length; ++elementIx) {
 			state.set(jointStateIx);
 			jointStateIx = stateCountSums[elementIx];
-			terminal |= closeEpsilonTransitions(0, elementIx, elements, stateCountSums, state);
+			boolean elementTerminated = closeEpsilonTransitions(0, elementIx, elements, stateCountSums, state);
+			if (elementTerminated) {
+				if (terminatedElements != null) {
+					terminatedElements.add(elementIx);
+				}
+				terminal = true;
+			}
 		}
 		return terminal;
 	}

@@ -2,7 +2,10 @@ package org.msyu.parser.intlexer;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -18,11 +21,14 @@ final class DfaBuilder {
 
 	final BitSet terminals = new BitSet();
 
+	final Map<Integer, Collection<Integer>> elementsByTerminal;
+
 
 	/**
 	 * Create an empty DfaBuilder, to be filled by a concrete definition.
 	 */
-	DfaBuilder() {
+	DfaBuilder(boolean trackTerminals) {
+		elementsByTerminal = trackTerminals ? new HashMap<>() : null;
 	}
 
 
@@ -98,6 +104,7 @@ final class DfaBuilder {
 		}
 
 		Map<BitSet, Integer> indexByCluster = new HashMap<>();
+		elementsByTerminal = dfa.elementsByTerminal == null ? null : new HashMap<>();
 		for (int i = 0; i < clusterByState.length; ++i) {
 			BitSet cluster = clusterByState[i];
 			if (cluster == null) {
@@ -107,6 +114,10 @@ final class DfaBuilder {
 			Integer clusterIx = indexByCluster.computeIfAbsent(cluster, c -> stateCount++);
 			if (dfa.terminals.get(i)) {
 				terminals.set(clusterIx);
+				if (elementsByTerminal != null) {
+					elementsByTerminal.computeIfAbsent(clusterIx, c -> new HashSet<>())
+							.addAll(dfa.elementsByTerminal.getOrDefault(i, Collections.emptyList()));
+				}
 			}
 		}
 

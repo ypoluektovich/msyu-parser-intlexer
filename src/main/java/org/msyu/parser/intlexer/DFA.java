@@ -1,9 +1,16 @@
 package org.msyu.parser.intlexer;
 
+import org.msyu.javautil.cf.CopyList;
+import org.msyu.javautil.cf.CopyMap;
+
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
@@ -15,12 +22,14 @@ public final class DFA implements Serializable {
 	private final transient RangeSet ranges;
 	private final transient int[][] transitionTable;
 	private final transient BitSet terminals;
+	private final transient Map<Integer, Collection<Integer>> elementsByTerminal;
 
 
-	DFA(RangeSet ranges, int[][] transitionTable, BitSet terminals) {
+	DFA(RangeSet ranges, int[][] transitionTable, BitSet terminals, Map<Integer, Collection<Integer>> elementsByTerminal) {
 		this.ranges = ranges;
 		this.transitionTable = transitionTable;
 		this.terminals = terminals;
+		this.elementsByTerminal = CopyMap.immutableHashV(elementsByTerminal, CopyList::immutable);
 	}
 
 
@@ -40,6 +49,10 @@ public final class DFA implements Serializable {
 		return terminals.get(state);
 	}
 
+	public final Collection<Integer> getTerminatedElements(int state) {
+		return elementsByTerminal.get(state);
+	}
+
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,21 +65,26 @@ public final class DFA implements Serializable {
 	}
 
 	private static final class SerialForm1 implements Serializable {
+		private static final long serialVersionUID = 1L;
+
 		private final RangeSet ranges;
 		private final int[][] transitionTable;
 		private final BitSet terminals;
+		private final Map<Integer, Collection<Integer>> elementsByTerminal;
 
 		SerialForm1(DFA dfa) {
 			ranges = dfa.ranges;
 			transitionTable = dfa.transitionTable;
 			terminals = dfa.terminals;
+			elementsByTerminal = dfa.elementsByTerminal;
 		}
 
 		private Object readResolve() throws InvalidObjectException {
 			return new DFA(
 					requireNonNull(ranges, "ranges"),
 					checkAndCopyTransitionTable(),
-					requireNonNull(terminals, "terminals")
+					requireNonNull(terminals, "terminals"),
+					checkAndCopyTerminatedElementsMap()
 			);
 		}
 
@@ -98,6 +116,30 @@ public final class DFA implements Serializable {
 				}
 			}
 			return tableCopy;
+		}
+
+		private Map<Integer, Collection<Integer>> checkAndCopyTerminatedElementsMap() throws InvalidObjectException {
+			if (elementsByTerminal == null) {
+				return null;
+			}
+			Map<Integer, Collection<Integer>> copy = new HashMap<>();
+			for (Map.Entry<Integer, Collection<Integer>> stateAndElements : elementsByTerminal.entrySet()) {
+				Integer state = stateAndElements.getKey();
+				if (state == null || state < 0) {
+					throw new InvalidObjectException("bad state in state-to-terminated-element map: " + state);
+				}
+				Collection<Integer> elements = stateAndElements.getValue();
+				for (Integer element : elements) {
+					if (element == null || element < 0) {
+						throw new InvalidObjectException(String.format(
+								"bad element in state-to-terminated-element map for state %d: %s",
+								state, element
+						));
+					}
+				}
+				copy.put(state, CopyList.immutable(elements));
+			}
+			return Collections.unmodifiableMap(copy);
 		}
 	}
 

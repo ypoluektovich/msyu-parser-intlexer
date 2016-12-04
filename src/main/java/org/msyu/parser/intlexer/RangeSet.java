@@ -249,6 +249,8 @@ public final class RangeSet implements Serializable {
 	}
 
 	private static final class SerialForm1 implements Serializable {
+		private static final long serialVersionUID = 1L;
+
 		private final int[] starts;
 		private final int[] ends;
 

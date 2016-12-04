@@ -4,9 +4,11 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import static org.msyu.parser.intlexer.DFA.NO_TRANSITION;
 
@@ -30,13 +32,18 @@ public abstract class AComplexDef extends ADef {
 		Queue<BitSet> queue = new ArrayDeque<>();
 
 		BitSet state = new BitSet();
-		registerNewState(state, buildInitialState(elements, stateCountSums, state), b, indexByState, queue);
+		Set<Integer> terminatedElements = b.elementsByTerminal == null ? null : new HashSet<>();
+		registerNewState(state, buildInitialState(elements, stateCountSums, state, terminatedElements), b, indexByState, queue);
+		if (terminatedElements != null) {
+			b.elementsByTerminal.put(0, terminatedElements);
+		}
 
 		while ((state = queue.poll()) != null) {
 			int stateIndex = indexByState.get(state);
 			for (int rangeIx = 0; rangeIx < b.basis.size(); ++rangeIx) {
 				BitSet nextState = new BitSet(jointStateCount);
 				boolean terminal = false;
+				terminatedElements = b.elementsByTerminal == null ? null : new HashSet<>();
 				for (int substate = state.nextSetBit(0); substate >= 0; substate = state.nextSetBit(substate + 1)) {
 					int elementIx = Arrays.binarySearch(stateCountSums, substate);
 					int elementState;
@@ -52,13 +59,21 @@ public abstract class AComplexDef extends ADef {
 					int nextElementState = elementRangeIx >= 0 ? element.getTransition(elementState, elementRangeIx) : NO_TRANSITION;
 					if (nextElementState != NO_TRANSITION) {
 						nextState.set((elementIx == 0 ? 0 : stateCountSums[elementIx - 1]) + nextElementState);
-						terminal |= closeEpsilonTransitions(nextElementState, elementIx, elements, stateCountSums, nextState);
+						if (closeEpsilonTransitions(nextElementState, elementIx, elements, stateCountSums, nextState)) {
+							if (terminatedElements != null) {
+								terminatedElements.add(elementIx);
+							}
+							terminal = true;
+						}
 					}
 				}
 				if (!nextState.isEmpty()) {
 					Integer nextIndex = indexByState.get(nextState);
 					if (nextIndex == null) {
 						nextIndex = registerNewState(nextState, terminal, b, indexByState, queue);
+						if (terminatedElements != null) {
+							b.elementsByTerminal.put(nextIndex, terminatedElements);
+						}
 					}
 					b.setTransition(stateIndex, rangeIx, nextIndex);
 				}
@@ -80,7 +95,7 @@ public abstract class AComplexDef extends ADef {
 		return stateIx;
 	}
 
-	protected abstract boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state);
+	protected abstract boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state, Set<Integer> terminatedElements);
 
 	protected abstract boolean closeEpsilonTransitions(
 			int elementState,

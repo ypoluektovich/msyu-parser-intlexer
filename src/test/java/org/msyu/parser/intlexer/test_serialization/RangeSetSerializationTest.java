@@ -8,7 +8,11 @@ import java.io.IOException;
 public class RangeSetSerializationTest extends SerializationTestBase<RangeSet> {
 
 	public RangeSetSerializationTest() {
-		super(new RangeSet(new int[]{2, 3, 5, 7, 11, 13}), "RangeSet", 1);
+		super(createSample(), "RangeSet", 1);
+	}
+
+	static RangeSet createSample() {
+		return new RangeSet(new int[]{2, 3, 5, 7, 11, 13});
 	}
 
 	@Test

@@ -5,6 +5,7 @@ import org.msyu.javautil.cf.CopyList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -26,13 +27,13 @@ public final class ComplexSeq extends AComplexDef {
 		process(
 				b,
 				elements.stream()
-						.map(innerDef -> innerDef.process(cache))
+						.map(innerDef -> innerDef.process(cache, false))
 						.collect(Collectors.toList())
 		);
 	}
 
 	@Override
-	protected final boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state) {
+	protected final boolean buildInitialState(List<DfaBuilder> elements, int[] stateCountSums, BitSet state, Set<Integer> terminatedElements) {
 		state.set(0);
 		return closeEpsilonTransitions(0, 0, elements, stateCountSums, state);
 	}

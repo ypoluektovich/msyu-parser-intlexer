@@ -9,7 +9,11 @@ import java.io.IOException;
 public class DfaSerializationTest extends SerializationTestBase<DFA> {
 
 	public DfaSerializationTest() {
-		super(Xml.NAME.buildDFA(), "DFA", 1);
+		super(createSample(), "DFA", 1);
+	}
+
+	static DFA createSample() {
+		return Xml.NAME.buildDFA();
 	}
 
 	@Test

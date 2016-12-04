@@ -2,6 +2,7 @@ package org.msyu.parser.intlexer;
 
 import org.testng.annotations.Test;
 
+import static java.util.Collections.singletonList;
 import static org.msyu.parser.intlexer.Defs.alt;
 import static org.msyu.parser.intlexer.Defs.sseq;
 
@@ -25,6 +26,7 @@ public class SimpleAltTest {
 
 		assert s >= 0;
 		assert dfa.isTerminalState(s);
+		assert singletonList(0).equals(dfa.getTerminatedElements(s));
 	}
 
 	@Test
@@ -53,6 +55,7 @@ public class SimpleAltTest {
 
 		assert s >= 0;
 		assert dfa.isTerminalState(s);
+		assert singletonList(1).equals(dfa.getTerminatedElements(s));
 	}
 
 	@Test
