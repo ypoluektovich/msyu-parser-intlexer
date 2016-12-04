@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import static java.util.Arrays.copyOf;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Set of disjoint intervals within [0; {@link Integer#MAX_VALUE}].
@@ -235,6 +236,14 @@ public final class RangeSet implements Serializable {
 			}
 		}
 		return new RangeSet(starts, ends, n);
+	}
+
+	public static RangeSet basis(RangeSet first, RangeSet... other) {
+		RangeSet basis = requireNonNull(first, "all range sets must be nonnull");
+		for (RangeSet rangeSet : other) {
+			basis = basis(first, requireNonNull(rangeSet, "all range sets must be nonnull"));
+		}
+		return basis;
 	}
 
 
