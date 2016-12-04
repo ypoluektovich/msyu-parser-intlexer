@@ -12,12 +12,10 @@ targetCompatibility = 1.8
 repositories {
     mavenCentral()
     maven { url 'http://dl.bintray.com/ypoluektovich/msyu' }
-    mavenLocal()
 }
 
 dependencies {
     compile 'org.msyu.javautil:cf:0.1.+'
-    compile 'org.msyu.parser:sixteen2four:1.+'
 
     testCompile 'org.testng:testng:6.9.+'
 }
