@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.msyu.parser.intlexer.DFA.NO_TRANSITION;
@@ -42,7 +43,12 @@ final class DfaBuilder {
 		for (int i = 0; i < dfa.stateCount - 1; ++i) {
 			boolean firstIsTerminal = dfa.terminals.get(i);
 			for (int j = i + 1; j < dfa.stateCount; ++j) {
-				if (firstIsTerminal != dfa.terminals.get(j)) {
+				boolean secondIsTerminal = dfa.terminals.get(j);
+				if (firstIsTerminal != secondIsTerminal) {
+					unmergeable[i].set(j);
+				} else if (dfa.elementsByTerminal != null && firstIsTerminal &&
+						!Objects.equals(dfa.elementsByTerminal.get(i), dfa.elementsByTerminal.get(j))
+				) {
 					unmergeable[i].set(j);
 				}
 			}
