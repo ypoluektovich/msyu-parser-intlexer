@@ -1,10 +1,11 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.8.0'
 }
 
 group 'org.msyu.parser'
-version '0.2.3'
+version '1.0.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -37,6 +38,28 @@ publishing {
             artifact sourceJar {
                 classifier 'sources'
             }
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+    publications = ['main']
+    dryRun = false
+    publish = false
+    pkg {
+        repo = 'msyu'
+        name = 'msyu-parser-intlexer'
+        desc = 'A Java library for DFA construction, intended for use as a lexer'
+        websiteUrl = 'https://github.com/ypoluektovich/msyu-parser-intlexer'
+        issueTrackerUrl = 'https://github.com/ypoluektovich/msyu-parser-intlexer/issues'
+        vcsUrl = 'https://github.com/ypoluektovich/msyu-parser-intlexer.git'
+        licenses = ['MPL-2.0']
+        publicDownloadNumbers = true
+        version {
+            name = project.version
+            vcsTag = 'v' + project.version
         }
     }
 }
