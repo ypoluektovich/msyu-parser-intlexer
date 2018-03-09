@@ -18,6 +18,16 @@ public final class SimpleSeq extends ADef {
 		this.elements = CopyList.immutable(elements, rs -> requireNonNull(rs, "all elements must be nonnull"));
 	}
 
+	@Override
+	public int getLength() {
+		return elements.size();
+	}
+
+	@Override
+	public boolean isNullable() {
+		return false;
+	}
+
 
 	@Override
 	protected final void process(DfaBuilder b, Map<ADef, DfaBuilder> cache) {

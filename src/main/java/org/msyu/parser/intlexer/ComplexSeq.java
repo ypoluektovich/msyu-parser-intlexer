@@ -14,11 +14,39 @@ public final class ComplexSeq extends AComplexDef {
 
 	private final List<ADef> elements;
 
+	private final int length;
+
+	private final boolean nullable;
+
 	public ComplexSeq(List<? extends ADef> elements) {
 		if (elements.isEmpty()) {
 			throw new IllegalArgumentException("element list must not be empty");
 		}
 		this.elements = CopyList.immutable(elements, rs -> requireNonNull(rs, "all elements must be nonnull"));
+
+		int length = 0;
+		boolean nullable = true;
+		for (ADef element : this.elements) {
+			int elementLength = element.getLength();
+			if (elementLength == -1) {
+				length = -1;
+			} else if (length != -1) {
+				length += elementLength;
+			}
+			nullable &= element.isNullable();
+		}
+		this.length = length;
+		this.nullable = nullable;
+	}
+
+	@Override
+	public int getLength() {
+		return length;
+	}
+
+	@Override
+	public boolean isNullable() {
+		return nullable;
 	}
 
 

@@ -14,11 +14,36 @@ public final class Alt extends AComplexDef {
 
 	private final List<ADef> alternatives;
 
+	private final int length;
+
+	private final boolean nullable;
+
 	public Alt(List<? extends ADef> alternatives) {
 		if (alternatives.isEmpty()) {
 			throw new IllegalArgumentException("alternatives list must not be empty");
 		}
 		this.alternatives = CopyList.immutable(alternatives, rs -> requireNonNull(rs, "all alternatives must be nonnull"));
+
+		int length = this.alternatives.get(0).getLength();
+		boolean nullable = this.alternatives.get(0).isNullable();
+		for (ADef element : this.alternatives.subList(1, this.alternatives.size())) {
+			if (element.getLength() != length) {
+				length = -1;
+			}
+			nullable |= element.isNullable();
+		}
+		this.length = length;
+		this.nullable = nullable;
+	}
+
+	@Override
+	public int getLength() {
+		return length;
+	}
+
+	@Override
+	public boolean isNullable() {
+		return nullable;
 	}
 
 

@@ -8,6 +8,17 @@ public abstract class ADef {
 	}
 
 	/**
+	 * Get the length of all strings matching this definition (if defined).
+	 * @return the length, or {@code -1} if the length varies.
+	 */
+	public abstract int getLength();
+
+	/**
+	 * Check whether this definition matches the empty string.
+	 */
+	public abstract boolean isNullable();
+
+	/**
 	 * Build a Deterministic Finite Automaton that accepts the language of this definition.
 	 */
 	public final DFA buildDFA() {

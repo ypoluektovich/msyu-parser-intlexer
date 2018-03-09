@@ -16,6 +16,16 @@ public final class Rpt extends AComplexDef {
 		this.repeated = requireNonNull(repeated, "repeated def must be nonnull");
 	}
 
+	@Override
+	public int getLength() {
+		return -1;
+	}
+
+	@Override
+	public boolean isNullable() {
+		return true;
+	}
+
 
 	@Override
 	protected final void process(DfaBuilder b, Map<ADef, DfaBuilder> cache) {
